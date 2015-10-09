@@ -29,17 +29,40 @@ Data <- Data[complete.cases(Data),]
 new_links <- Data$V2
 
 foo <- data.frame(matrix(ncol = 2))
+for (i in new_links){ 
+  
+  # td, tr, b
+  # td, th, .vcard a
+  name <- read_html(as.character(i))
+  returned_value = as.data.frame(name %>%
+                                 html_nodes("tr, th td") %>%
+                                  html_text(), stringsAsFactors = F)
+  
+  if (nrow(returned_value)>0){
+    returned_value$Label <- i
+  }else{
+    returned_value[1,1]<- "NULL"
+    returned_value[1,2]<- "NULL"
+  }
+  returned_value <- returned_value[2:25,]
+  returned_value$`name %>% html_nodes("tr, th td") %>% html_text()` <- gsub("\n", " ", returned_value$`name %>% html_nodes("tr, th td") %>% html_text()`)
+  returned_value <- as.data.frame(unique(returned_value), stringsAsFactors = F)
+  
+  
+  colnames(foo)<- colnames(returned_value)
+  
+  foo <- rbind(foo, returned_value)
+  }
 
 
-new_links_2 <- new_links[7:40]
+colnames(foo) <- c("Mined Data","Label")
 
- 
-write.csv(foo, "testfile_1.csv")
 
 Data$V1 <- as.character(Data$V1)
+foo$Label <- as.character(foo$Label)
+
 
 colnames(Data)<- c("Company Name", "Label")
-foo$Label <- as.character(foo$Label)
 
 combined_data <- merge(foo, Data, by ="Label" )
 
@@ -108,6 +131,11 @@ colnames(wideformatdatatowrite)<-    gsub("Â", replacement = " ", x = colnames(
 setwd("C:/Users/Eric/Documents/R/DataMining/Wikipedia")
 
 write.csv(wideformatdatatowrite, "WikipediaUnitesStatesCompaniesWideFormat.csv",row.names = F)
+
+
+
+
+
 
 
 
