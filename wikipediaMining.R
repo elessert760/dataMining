@@ -6,7 +6,7 @@ library(data.table)
 library(rvest)
 library(reshape2)
 
-
+rm(list = ls())
 link <- "https://en.wikipedia.org/wiki/List_of_companies_of_the_United_States"
 wikipedialistmining <- function(link, filename){
 links <- link
@@ -25,7 +25,7 @@ Data$V2 <- gsub("%27", replacement = "'", x = Data$V2)
 Data <- Data[complete.cases(Data),]
 
 
-new_links <- Data$V2[15:length(Data$V2)]
+new_links <- Data$V2[5:length(Data$V2)]
 
 foo <- data.frame(matrix(ncol = 2))
 for (i in new_links){ 
@@ -77,7 +77,7 @@ combined_data$`Mined Data` <- paste("|", combined_data$`Mined Data`, sep = "")
 combined_data$`Mined Data` <- gsub("||", replacement = "|", x = combined_data$`Mined Data`,fixed = T)
 combined_data$`Mined Data` <- gsub("||", replacement = "|", x = combined_data$`Mined Data`,fixed = T)
 combined_data$`Mined Data` <- gsub("||", replacement = "|", x = combined_data$`Mined Data`,fixed = T)
-combined_data$`Mined Data` <- paste("|", combined_data$`Mined Data`, sep = "")
+
 
 keyvaluepairs <- as.data.frame(str_split_fixed(string = combined_data$`Mined Data`, pattern = "\\|", n = 3))
 
@@ -131,7 +131,7 @@ colnames(wideformatdatatowrite)<-    gsub("Â", replacement = " ", x = colnames(
 
 setwd("C:/Users/Eric/Documents/R/DataMining/Wikipedia")
 
-write.csv(wideformatdatatowrite, file = paste(Sys.Date(), filename, sep = "-"),row.names = F)
+write.csv(wideformatdatatowrite, file = paste(Sys.Date(), "Data Mining.csv", sep = "-"),row.names = F)
 
 
 }
