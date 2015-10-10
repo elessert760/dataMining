@@ -7,10 +7,9 @@ library(rvest)
 library(reshape2)
 
 
-
-
-links <-
- "https://en.wikipedia.org/wiki/List_of_companies_of_the_United_States"
+link <- "https://en.wikipedia.org/wiki/List_of_companies_of_the_United_States"
+wikipedialistmining <- function(link, filename){
+links <- link
 dat <- data.frame()
 
 doc <- read_html(links)
@@ -26,7 +25,7 @@ Data$V2 <- gsub("%27", replacement = "'", x = Data$V2)
 Data <- Data[complete.cases(Data),]
 
 
-new_links <- Data$V2
+new_links <- Data$V2[15:length(Data$V2)]
 
 foo <- data.frame(matrix(ncol = 2))
 for (i in new_links){ 
@@ -34,24 +33,24 @@ for (i in new_links){
   # td, tr, b
   # td, th, .vcard a
   name <- read_html(as.character(i))
-  returned_value = as.data.frame(name %>%
-                                 html_nodes("tr, th td") %>%
-                                  html_text(), stringsAsFactors = F)
+
+    returned_variable = as.data.frame(name %>%
+                                   html_nodes(css ='tr, th div a') %>%
+                                   html_text(), stringsAsFactors = F)
   
-  if (nrow(returned_value)>0){
-    returned_value$Label <- i
+    
+
+  if (nrow(returned_variable)>0){
+   returned_variable$Label <- i
   }else{
-    returned_value[1,1]<- "NULL"
-    returned_value[1,2]<- "NULL"
+    returned_variable[1,1]<- "NULL"
+    returned_variable[1,2]<- "NULL"
   }
-  returned_value <- returned_value[2:25,]
-  returned_value$`name %>% html_nodes("tr, th td") %>% html_text()` <- gsub("\n", " ", returned_value$`name %>% html_nodes("tr, th td") %>% html_text()`)
-  returned_value <- as.data.frame(unique(returned_value), stringsAsFactors = F)
+
   
+  colnames(foo)<- colnames(returned_variable)
   
-  colnames(foo)<- colnames(returned_value)
-  
-  foo <- rbind(foo, returned_value)
+  foo <- rbind(foo, returned_variable)
   }
 
 
@@ -74,9 +73,11 @@ test_data<- gsub("\n", replacement = "|", x = combined_data$`Mined Data`,fixed =
 
 
 combined_data$`Mined Data` <- gsub("\n", replacement = "|", x = combined_data$`Mined Data`,fixed = T)
+combined_data$`Mined Data` <- paste("|", combined_data$`Mined Data`, sep = "")
 combined_data$`Mined Data` <- gsub("||", replacement = "|", x = combined_data$`Mined Data`,fixed = T)
 combined_data$`Mined Data` <- gsub("||", replacement = "|", x = combined_data$`Mined Data`,fixed = T)
 combined_data$`Mined Data` <- gsub("||", replacement = "|", x = combined_data$`Mined Data`,fixed = T)
+combined_data$`Mined Data` <- paste("|", combined_data$`Mined Data`, sep = "")
 
 keyvaluepairs <- as.data.frame(str_split_fixed(string = combined_data$`Mined Data`, pattern = "\\|", n = 3))
 
@@ -130,15 +131,10 @@ colnames(wideformatdatatowrite)<-    gsub("Â", replacement = " ", x = colnames(
 
 setwd("C:/Users/Eric/Documents/R/DataMining/Wikipedia")
 
-write.csv(wideformatdatatowrite, "WikipediaUnitesStatesCompaniesWideFormat.csv",row.names = F)
+write.csv(wideformatdatatowrite, file = paste(Sys.Date(), filename, sep = "-"),row.names = F)
 
 
+}
 
 
-
-
-
-
-
-
-
+system.time(wikipedialistmining(link = "https://en.wikipedia.org/wiki/List_of_companies_of_the_United_States", filename = "testfileforfunction.csv"))
