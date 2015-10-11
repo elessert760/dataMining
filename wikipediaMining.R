@@ -1,3 +1,27 @@
+# sessionInfo()
+# R version 3.2.0 (2015-04-16)
+# Platform: x86_64-w64-mingw32/x64 (64-bit)
+# Running under: Windows 8 x64 (build 9200)
+# 
+# locale:
+#   [1] LC_COLLATE=English_United States.1252  LC_CTYPE=English_United States.1252   
+# [3] LC_MONETARY=English_United States.1252 LC_NUMERIC=C                          
+# [5] LC_TIME=English_United States.1252    
+# 
+# attached base packages:
+#   [1] stats     graphics  grDevices utils     datasets  methods   base     
+# 
+# other attached packages:
+#   [1] reshape2_1.4.1   rvest_0.3.0      data.table_1.9.4 tidyr_0.2.0     
+# [5] dplyr_0.4.2      stringr_1.0.0    xml2_0.1.2      
+# 
+# loaded via a namespace (and not attached):
+#   [1] Rcpp_0.12.1    XML_3.98-1.3   assertthat_0.1 chron_2.3-47   R6_2.1.1      
+# [6] plyr_1.8.3     DBI_0.3.1      magrittr_1.5   httr_1.0.0     stringi_0.5-5 
+# [11] curl_0.9.3     tools_3.2.0    selectr_0.2-3  parallel_3.2.0
+
+
+
 library(xml2)
 library(stringr)
 library(dplyr)
