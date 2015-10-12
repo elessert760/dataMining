@@ -1,0 +1,19 @@
+#requires a set of html links which were provided in a spreadsheet
+
+manufacturer = function(object){
+setwd("C:/Users/Eric/Documents/R/DataMining")
+dat = data.frame()
+for (i in object){
+name <- html(as.character(i))
+returned_name = as.data.frame(name %>%
+html_nodes(".name") %>%
+html_text())
+returned_label = as.data.frame(name %>%
+html_nodes(".iupacName span , .name") %>%
+html_text())
+rep_returned_label = rep(returned_label[1,], nrow(returned_name))
+bound_values = cbind(rep_returned_label, returned_name)
+dat = as.data.frame(rbind(dat, bound_values))
+}
+
+write.csv(dat, "results.csv", row.names = F)
