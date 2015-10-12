@@ -1,4 +1,6 @@
 ####CMR Web Scrape of Html content
+####there is a separate file for getting hrefs out of the html frm Edgars search structure
+
 library(rvest)
 
 CMR <- function(object){
