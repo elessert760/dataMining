@@ -1,16 +1,15 @@
 #Weird that this works on my desktop R version 3.1.1 but not on my laptop r version 3.2.0
 
-library(xml2)
+library(tidyverse)
 library(stringr)
-library(dplyr)
-library(tidyr)
-library(data.table)
 library(rvest)
 library(magrittr)
 library(purrr)
 
-pages <- seq(from = 1, to = 4600, by = 100)
-links <- paste0("https://searchwww.sec.gov/EDGARFSClient/jsp/EDGAR_MainAccess.jsp?search_text=*&sort=Date&startDoc=", pages, "&numResults=100&isAdv=true&formType=FormSD&fromDate=mm/dd/yyyy&toDate=mm/dd/yyyy")
+pages <- seq(from = 1, to = 10000, by = 100)
+links <- paste0("https://searchwww.sec.gov/EDGARFSClient/jsp/EDGAR_MainAccess.jsp?search_text=*&sort=Date&startDoc=", 
+                pages,
+                "&numResults=100&isAdv=true&formType=FormSD&fromDate=mm/dd/yyyy&toDate=mm/dd/yyyy")
 
 get_links <- function(i){
 
@@ -37,7 +36,10 @@ return(Links)
 
 }
 
+links[1]
 
-test <- links[3:7] %>% map_df(get_links)
+test <- links[1:10] %>% map_df(get_links)
+test %<>% unique
+test$url %<>% gsub(., pattern = "'", replacement = "")
 
-test %>% unique
+test %>% write_csv("cmr_links.csv")
