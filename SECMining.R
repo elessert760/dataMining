@@ -32,6 +32,7 @@ Links %<>% cbind(Names) %>% as_data_frame() %>% unique
 colnames(Links) <- c("url", "company_name")
 
 Sys.sleep(1)
+
 return(Links)
 
 }
