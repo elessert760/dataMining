@@ -5,37 +5,38 @@ library(stringr)
 library(dplyr)
 library(tidyr)
 library(data.table)
+library(rvest)
+library(magrittr)
+library(purrr)
 
 pages <- seq(from = 1, to = 4600, by = 100)
-links <- paste("https://searchwww.sec.gov/EDGARFSClient/jsp/EDGAR_MainAccess.jsp?search_text=*&sort=Date&startDoc=", pages, "&numResults=100&isAdv=true&formType=FormSD&fromDate=mm/dd/yyyy&toDate=mm/dd/yyyy")
+links <- paste0("https://searchwww.sec.gov/EDGARFSClient/jsp/EDGAR_MainAccess.jsp?search_text=*&sort=Date&startDoc=", pages, "&numResults=100&isAdv=true&formType=FormSD&fromDate=mm/dd/yyyy&toDate=mm/dd/yyyy")
 
-dat <- data.frame()
+get_links <- function(i){
 
-#some people may not like the regex thing here, but it works
+doc <- read_html(i) %>% html_nodes("a") %>% html_attr("href") %>% grep(., pattern = "http:", value = T)
 
-for(i in links){
-doc <- read_html(i)
-nodes <-  xml_find_all(doc, "//a")
-hrefs <- xml_attr(nodes, "href")  
-hrefs <- gsub(pattern = "^\\javascript:(*)", replacement = "", x= hrefs)
-hrefs <- gsub(pattern = "^\\open(*)", replacement = "", x= hrefs)
-hrefs <- gsub(pattern = "new", replacement = "", x= hrefs)
-hrefs <- gsub(pattern = "ciksearch", replacement = "", x= hrefs)
-hrefs <- gsub(pattern = "\\(\\'", replacement = "", x= hrefs)
-hrefs <- gsub(pattern = "filing", replacement = "", x= hrefs)
-hrefs <- gsub(pattern = "\','');", replacement = "", x= hrefs)
-sorted_links <- hrefs[grep("http://", x = hrefs)]
-
-split_strings <- str_split(pattern = "\','", string = sorted_links)
-as.list(split_strings)
-
-foo <- as.data.frame(unique(sapply(split_strings, "[[", 1)))
-#should probably get the second element and rbind them together as a label
-
-colnames(foo)<- colnames(dat)
-
-dat <- rbind(foo, dat)
+doc %<>% gsub(., pattern = "javascript:opennew(", replacement = "", fixed = T) %>% 
+  gsub(., pattern = "javascript:opennewfiling(", replacement = "", fixed = T) %>% 
+  str_split(",")
 
 
+Links <- doc %>% map_chr(extract, 1)
+Names <- doc %>% map_chr(extract, 2)
+
+names(Names) <- "Names"
+names(Links) <- "Links"
+
+Links %<>% cbind(Names) %>% as_data_frame() %>% unique
+
+colnames(Links) <- c("url", "company_name")
+
+Sys.sleep(1)
+return(Links)
 
 }
+
+
+test <- links[3:7] %>% map_df(get_links)
+
+test %>% unique
